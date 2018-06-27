@@ -12,7 +12,7 @@ import { PostsService } from '../posts.service';
 export class PostCreateComponent implements OnInit {
 
   postCreated: Post[] = [];
-  constructor(public postsService: PostsService) { }
+  constructor(public postsService: PostsService, ) { }
 
   ngOnInit() {
 

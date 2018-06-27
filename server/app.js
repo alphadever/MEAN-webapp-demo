@@ -1,7 +1,19 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
+const Post = require('./models/post');
 const app = express();
 
+mongoose.connect('mongodb+srv://alphadever:HiMWiILfEgL8k6qT@cluster0-v4dyf.mongodb.net/node-angular?retryWrites=true')
+  .then(() => {
+    console.log('Connected to database !');
+  })
+  .catch(() => {
+    console.log('Connection failed !');
+  });
+
+app.use(bodyParser.json());
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers",
@@ -13,37 +25,32 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/posts', (req, res, next) => {
-  const posts = [{
-      id: "fadf12421l",
-      title: "First server-side post",
-      content: "this is coming from the server"
-    },
-    {
-      id: "bb234j2k3n",
-      title: "Second server-side post",
-      content: "this is coming from the server"
-    },
-    {
-      id: "kn32432jn",
-      title: "Third server-side post",
-      content: "this is coming from the server"
-    },
-    {
-      id: "knkn34242nk32",
-      title: "Fourth server-side post",
-      content: "this is coming from the server"
-    },
-    {
-      id: "knjn234jnn32",
-      title: "Fifth server-side post",
-      content: "this is coming from the server"
-    }
-  ]
+app.post("/api/posts", async (req, res, next) => {
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content
+  });
+  const result = await post.save();
+  console.log(result);
+  res.status(201).json({
+    message: 'post added successfully',
+    postId: result._id,
+  });
+});
+
+app.get('/api/posts', async (req, res, next) => {
+  const posts = await Post.find();
   res.status(200).json({
     message: 'Posts fetched successfully',
     posts: posts
   });
 });
+
+app.delete("/api/posts/:id", async (req, res, next) => {
+  await Post.deleteOne({_id : req.params.id})
+  res.status(200).json({
+    message: 'Post Deleted !'
+  });
+})
 
 module.exports = app;
