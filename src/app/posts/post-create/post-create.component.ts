@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Post } from '../post.model';
 import { NgForm } from '@angular/forms';
 import { PostsService } from '../posts.service';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { PostsService } from '../posts.service';
 export class PostCreateComponent implements OnInit {
 
   postCreated: Post[] = [];
-  constructor(public postsService: PostsService, ) { }
+  constructor(public postsService: PostsService, public route: ActivatedRoute) { }
 
   ngOnInit() {
 
