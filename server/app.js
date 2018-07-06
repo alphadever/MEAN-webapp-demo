@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   res.setHeader("Access-Control-Allow-Methods",
-    "GET, POST, PATCH, DELETE, OPTIONS"
+    "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
   next();
 });
@@ -46,8 +46,36 @@ app.get('/api/posts', async (req, res, next) => {
   });
 });
 
+app.get('/api/posts/:id', async (req, res, next) => {
+  const post = await Post.findById(req.params.id);
+  if (post) {
+    res.status(200).json({
+      post: post
+    });
+  } else {
+    res.status(404).json({
+      message: 'Posts fetched successfully'
+    });
+  }
+
+});
+
+app.put("/api/posts/:id", (req, res, next) => {
+  const post = new Post({
+    _id: req.body.id,
+    title: req.body.title,
+    content: req.body.content
+  });
+  Post.updateOne({ _id: req.params.id }, post).then(result => {
+    console.log(result);
+    res.status(200).json({ message: "Update successful!" });
+  });
+});
+
 app.delete("/api/posts/:id", async (req, res, next) => {
-  await Post.deleteOne({_id : req.params.id})
+  await Post.deleteOne({
+    _id: req.params.id
+  })
   res.status(200).json({
     message: 'Post Deleted !'
   });
