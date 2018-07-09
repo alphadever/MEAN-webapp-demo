@@ -28,9 +28,7 @@ router.get('', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     const post = await Post.findById(req.params.id);
     if (post) {
-        res.status(200).json({
-            post: post
-        });
+        res.status(200).json(post);
     } else {
         res.status(404).json({
             message: 'Posts fetched successfully'
