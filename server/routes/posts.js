@@ -46,10 +46,20 @@ router.post('', multer({
 });
 
 router.get('', async (req, res, next) => {
-  const posts = await Post.find();
+  const pageSize = +req.query.pageSize;
+  const currentPage = +req.query.page;
+  const postQuery = Post.find();
+  if (pageSize && currentPage) {
+    postQuery
+      .skip(pageSize * (currentPage - 1))
+      .limit(pageSize);
+  }
+  const posts = await postQuery;
+  const count = await Post.count();
   res.status(200).json({
     message: 'Posts fetched successfully',
-    posts: posts
+    posts: posts,
+    maxPosts: count
   });
 });
 
@@ -65,9 +75,11 @@ router.get('/:id', async (req, res, next) => {
 
 });
 
-router.put("/:id", multer({storage: storage}).single('image'), (req, res, next) => {
+router.put("/:id", multer({
+  storage: storage
+}).single('image'), (req, res, next) => {
   let imagePath = req.body.imagePath;
-  if(req.file) {
+  if (req.file) {
     const url = req.protocol + '://' + req.get('host');
     imagePath = url + '/images/' + req.file.filename
   }
